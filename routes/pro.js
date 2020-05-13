@@ -33,13 +33,6 @@ router.post("/v1/reg/",function(req,res){
 router.post("/v1/login/",(req,res,next)=>{
     // var str="";
     var obj=req.body;
-        // req.on("data",function(chunk){
-        //      str+=chunk 
-        //     obj=str
-        //     console.log(str,"hhh")})
-    //      req.on("end",function(){
-    //        console.log(str,"9090")
-    //    })
     let remember=obj.remember
     console.log(obj,"22")
     var sql="select uname,upwd from music_user where uname=? and upwd=?";
@@ -62,6 +55,76 @@ router.get("/v1/referenceinfo",(req,res)=>{
         // res.write(JSON.stringify(result));
         if(err) throw err;
         if(result.length>0){
+            res.send(result);
+        }
+    });
+});
+router.get("/v1/concrete",(req,res)=>{
+    var sql="SELECT * FROM concrete"
+    pool.query(sql,[],(err,result)=>{
+        // res.write(JSON.stringify(result));
+        if(err) throw err;
+        if(result.length>0){
+            res.send(result);
+        }
+    });
+});
+//评论
+router.post("/v1/collect",(req,res)=>{
+    var obj=req.body;
+    let $collect=obj.collect
+    let $referId=obj.referId
+    console.log($collect,$referId)
+    var sql="update referenceinfo set collect=?  where referId=?"
+    pool.query(sql,[$collect,$referId],(err,result)=>{
+        // res.write(JSON.stringify(result));
+        if(err) throw err;
+        console.log(result)
+        if(result.changedRows>0){
+            
+            res.send(result);
+        }
+    });
+});
+//精确查找
+router.post("/v1/exactValue",(req,res)=>{
+    var obj=req.body;
+    let $author=obj.author
+    let $time=obj.time
+    let $title=obj.title
+    let $referId=obj.referId
+    let $collect=obj.collect
+    console.log($collect,$referId)
+    var sql="SELECT * FROM referenceinfo where author=? and time=? and title=? and referId=? and collect=?"
+    pool.query(sql,[$author,$time,$title,$referId,$collect],(err,result)=>{
+        // res.write(JSON.stringify(result));
+        if(err) throw err;
+        console.log(result)
+        if(result.length>0){
+            
+            res.send({result,code:1});
+        }
+    });
+});
+router.get("/v1/scholar",(req,res)=>{
+    var sql="SELECT * FROM scholar"
+    pool.query(sql,[],(err,result)=>{
+        // res.write(JSON.stringify(result));
+        if(err) throw err;
+        if(result.length>0){
+            res.send(result);
+        }
+    });
+});
+router.post("/v1/advise",(req,res)=>{
+    var $content=req.body.content;
+    var $email=req.body.content;
+    var sql="INSERT INTO advise (content,email) VALUES(?,?)"
+    pool.query(sql,[$content,$email],(err,result)=>{
+        // res.write(JSON.stringify(result));
+        if(err) throw err;
+        console.log(result)
+        if(result.affectedRows>0){
             res.send(result);
         }
     });
